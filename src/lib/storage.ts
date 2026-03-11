@@ -7,6 +7,7 @@ export type AdminSession = {
   username: string
   role: Role
   remember: boolean
+  isCEO?: boolean // CEO has special privileges
 }
 
 export const getStoredRole = () => {

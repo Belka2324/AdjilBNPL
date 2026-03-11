@@ -9,11 +9,33 @@ const schema = z.object({
   password: z.string().min(1)
 })
 
+// Default credentials for demo
+const DEFAULT_CREDENTIALS: Record<string, { password: string; role: Role; isCEO?: boolean }> = {
+  'ceo': { password: 'ceo', role: 'administrator', isCEO: true },
+  'admin': { password: 'belka23', role: 'administrator', isCEO: true },
+  'partner': { password: 'partner', role: 'partner' },
+  'support': { password: 'support', role: 'support' }
+}
+
 export default function Login() {
   const navigate = useNavigate()
   const [error, setError] = useState('')
   const [remember, setRemember] = useState(true)
   const role = (getStoredRole() || 'administrator') as Role
+
+  // Check for team member login
+  const checkTeamLogin = (username: string, password: string) => {
+    try {
+      const loginData = JSON.parse(localStorage.getItem('adjil_login_data') || '[]')
+      const user = loginData.find((u: any) => u.username === username && u.password === password)
+      if (user) {
+        return { role: user.role, isCEO: false }
+      }
+    } catch (e) {
+      console.log('No team login data')
+    }
+    return null
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -24,11 +46,24 @@ export default function Login() {
       setError('الرجاء إدخال اسم المستخدم وكلمة المرور')
       return
     }
-    if (data.username === 'admin' && data.password === 'admin') {
-      saveSession({ username: data.username, role, remember })
+    
+    // First check default credentials
+    const defaultCred = DEFAULT_CREDENTIALS[data.username.toLowerCase()]
+    if (defaultCred && defaultCred.password === data.password) {
+      const isCEO = defaultCred.isCEO || data.username.toLowerCase() === 'ceo'
+      saveSession({ username: data.username, role: defaultCred.role, remember, isCEO })
       navigate('/dashboard')
       return
     }
+    
+    // Then check team member credentials
+    const teamLogin = checkTeamLogin(data.username, data.password)
+    if (teamLogin) {
+      saveSession({ username: data.username, role: teamLogin.role, remember, isCEO: false })
+      navigate('/dashboard')
+      return
+    }
+    
     setError('بيانات الدخول غير صحيحة')
   }
 

@@ -19,8 +19,16 @@ export const roleAccess: Record<Role, string[]> = {
     'audit',
     'settings'
   ],
-  partner: ['overview', 'merchants', 'transactions', 'invoices'],
-  support: ['overview', 'users', 'complaints']
+  // Partner can see merchants, customers, transactions, invoices
+  partner: ['overview', 'merchants', 'users', 'transactions', 'invoices'],
+  // Support can see users, merchants, complaints
+  support: ['overview', 'users', 'merchants', 'complaints'],
+  // Admin role (same as administrator)
+  admin: ['overview', 'users', 'merchants', 'transactions', 'blacklist', 'frozen', 'complaints', 'invoices', 'audit', 'settings'],
+  // Customer role (limited access)
+  customer: ['overview'],
+  // Merchant role (limited access)
+  merchant: ['overview']
 }
 
 export const navItems: NavItem[] = [

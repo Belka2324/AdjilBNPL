@@ -40,11 +40,11 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/dashboard" element={shell(<Dashboard />)} />
-      <Route path="/dashboard/users" element={allow('users') ? shell(<Users />) : <Navigate to="/dashboard" replace />} />
-      <Route path="/dashboard/merchants" element={allow('merchants') ? shell(<Merchants />) : <Navigate to="/dashboard" replace />} />
+      <Route path="/dashboard/users" element={allow('users') ? shell(<Users isAdmin={session?.role === 'administrator' || session?.role === 'admin' || session?.isCEO === true} />) : <Navigate to="/dashboard" replace />} />
+      <Route path="/dashboard/merchants" element={allow('merchants') ? shell(<Merchants isAdmin={session?.role === 'administrator' || session?.role === 'admin' || session?.isCEO === true} />) : <Navigate to="/dashboard" replace />} />
       <Route path="/dashboard/transactions" element={allow('transactions') ? shell(<Transactions />) : <Navigate to="/dashboard" replace />} />
       <Route path="/dashboard/blacklist" element={allow('blacklist') ? shell(<Blacklist />) : <Navigate to="/dashboard" replace />} />
-      <Route path="/dashboard/frozen" element={allow('frozen') ? shell(<Frozen />) : <Navigate to="/dashboard" replace />} />
+      <Route path="/dashboard/frozen" element={allow('frozen') ? shell(<Frozen isAdmin={session?.role === 'administrator' || session?.role === 'admin' || session?.isCEO === true} />) : <Navigate to="/dashboard" replace />} />
       <Route path="/dashboard/complaints" element={allow('complaints') ? shell(<Complaints />) : <Navigate to="/dashboard" replace />} />
       <Route path="/dashboard/invoices" element={allow('invoices') ? shell(<Invoices />) : <Navigate to="/dashboard" replace />} />
       <Route path="/dashboard/audit" element={allow('audit') ? shell(<Audit />) : <Navigate to="/dashboard" replace />} />

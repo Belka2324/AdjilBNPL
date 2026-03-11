@@ -1,13 +1,14 @@
-export type Role = 'administrator' | 'partner' | 'support'
+export type Role = 'administrator' | 'partner' | 'support' | 'admin' | 'customer' | 'merchant'
 
 export type UserRecord = {
   id: string
   name?: string
   email?: string
   phone?: string
-  role?: 'customer' | 'merchant'
+  role?: 'customer' | 'merchant' | 'admin' | 'partner' | 'support'
   status?: string
   balance?: number
+  outstanding?: number
   subscription_plan?: string
   credit_limit?: number
   location?: string
@@ -29,6 +30,8 @@ export type TransactionRecord = {
   amount?: number
   method?: string
   status?: string
+  paid?: boolean
+  paid_at?: string
   created_at?: string
   merchant_name?: string
   customer_name?: string
