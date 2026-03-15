@@ -17,14 +17,28 @@ export const roleAccess: Record<Role, string[]> = {
     'complaints',
     'invoices',
     'audit',
-    'settings'
+    'settings',
+    'team'
+  ],
+  ceo: [
+    'overview',
+    'users',
+    'merchants',
+    'transactions',
+    'blacklist',
+    'frozen',
+    'complaints',
+    'invoices',
+    'audit',
+    'settings',
+    'team'
   ],
   // Partner can see merchants, customers, transactions, invoices
   partner: ['overview', 'merchants', 'users', 'transactions', 'invoices'],
   // Support can see users, merchants, complaints
   support: ['overview', 'users', 'merchants', 'complaints'],
   // Admin role (same as administrator)
-  admin: ['overview', 'users', 'merchants', 'transactions', 'blacklist', 'frozen', 'complaints', 'invoices', 'audit', 'settings'],
+  admin: ['overview', 'users', 'merchants', 'transactions', 'blacklist', 'frozen', 'complaints', 'invoices', 'audit', 'settings', 'team'],
   // Customer role (limited access)
   customer: ['overview'],
   // Merchant role (limited access)
@@ -41,5 +55,6 @@ export const navItems: NavItem[] = [
   { key: 'complaints', label: 'الشكاوي / Réclamations / Complaints', path: '/dashboard/complaints' },
   { key: 'invoices', label: 'الفواتير / Factures / Invoices', path: '/dashboard/invoices' },
   { key: 'audit', label: 'سجل النشاط / Audit / Logs', path: '/dashboard/audit' },
-  { key: 'settings', label: 'الإعدادات / Paramètres / Settings', path: '/dashboard/settings' }
+  { key: 'settings', label: 'الإعدادات / Paramètres / Settings', path: '/dashboard/settings' },
+  { key: 'team', label: 'فريق العمل / Équipe / Team', path: '/dashboard/team' }
 ]

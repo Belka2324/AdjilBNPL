@@ -12,6 +12,8 @@ import Complaints from './pages/Complaints'
 import Invoices from './pages/Invoices'
 import Audit from './pages/Audit'
 import Settings from './pages/Settings'
+import Team from './pages/Team'
+import StaffProfile from './pages/StaffProfile'
 import DashboardLayout from './components/DashboardLayout'
 import { AdminSession, getSession } from './lib/storage'
 import { roleAccess } from './lib/rbac'
@@ -39,6 +41,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/admin-login" element={<Login isAdminPortal />} />
       <Route path="/dashboard" element={shell(<Dashboard />)} />
       <Route path="/dashboard/users" element={allow('users') ? shell(<Users isAdmin={session?.role === 'administrator' || session?.role === 'admin' || session?.isCEO === true} />) : <Navigate to="/dashboard" replace />} />
       <Route path="/dashboard/merchants" element={allow('merchants') ? shell(<Merchants isAdmin={session?.role === 'administrator' || session?.role === 'admin' || session?.isCEO === true} />) : <Navigate to="/dashboard" replace />} />
@@ -49,6 +52,8 @@ export default function App() {
       <Route path="/dashboard/invoices" element={allow('invoices') ? shell(<Invoices />) : <Navigate to="/dashboard" replace />} />
       <Route path="/dashboard/audit" element={allow('audit') ? shell(<Audit />) : <Navigate to="/dashboard" replace />} />
       <Route path="/dashboard/settings" element={allow('settings') ? shell(<Settings />) : <Navigate to="/dashboard" replace />} />
+      <Route path="/dashboard/team" element={allow('team') ? shell(<Team />) : <Navigate to="/dashboard" replace />} />
+      <Route path="/staff/:id" element={shell(<StaffProfile />)} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

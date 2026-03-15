@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { fetchTeamMembers, createTeamMember, updateUserStatus, deleteTeamMember } from '../lib/data'
-import { UserRecord } from '../lib/types'
-import { Role } from '../lib/types'
+import { getSession } from '../lib/storage'
+import { supabase, hasSupabase } from '../lib/supabase'
+import { UserRecord, Role } from '../lib/types'
 
 type Props = {
   // Get role from session - for now using a default
@@ -23,55 +23,122 @@ export default function Settings() {
   const [newName, setNewName] = useState('')
   const [creating, setCreating] = useState(false)
 
-  // CEO role check - in real app would come from session
-  const isCEO = true // For demonstration - would check session.role === 'administrator'
+  // CEO role check - get from session
+  const session = getSession()
+  const isCEO = session?.role === 'administrator' || session?.isCEO === true || session?.role === 'ceo'
 
   useEffect(() => {
+    const fetchTeamData = async () => {
+      if (hasSupabase && supabase) {
+        // Fetch staff from staff table
+        const { data: staffData } = await supabase
+          .from('staff')
+          .select('*')
+          .in('role', ['administrator', 'partner', 'support', 'ceo'])
+        
+        // Also fetch admins from users table
+        const { data: userData } = await supabase
+          .from('users')
+          .select('*')
+          .in('role', ['admin', 'administrator'])
+        
+        // Combine both
+        const allMembers = [
+          ...(staffData || []).map(s => ({
+            id: s.id,
+            name: `${s.first_name} ${s.last_name}`,
+            email: s.email,
+            role: s.role,
+            status: s.is_active ? 'active' : 'suspended'
+          })),
+          ...(userData || []).map(u => ({
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            role: u.role,
+            status: u.status
+          }))
+        ]
+        setTeamMembers(allMembers)
+      }
+    }
+    
     if (activeTab === 'team') {
-      fetchTeamMembers().then((data) => {
-        // Get only admin team members
-        const admins = data.filter((u) => ['admin', 'partner', 'support', 'administrator'].includes(u.role || ''))
-        setTeamMembers(admins)
-      })
+      fetchTeamData()
     }
   }, [activeTab])
 
   const handleCreateAccount = async () => {
-    if (!newEmail || !newPassword || !newName || !newUsername) return
+    if (!newEmail || !newName || !newUsername) return
     setCreating(true)
     
-    await createTeamMember({
-      name: newName,
-      email: newEmail,
-      password: newPassword,
-      role: newRole,
-      username: newUsername
-    })
-    
-    setNewEmail('')
-    setNewPassword('')
-    setNewUsername('')
-    setNewName('')
-    setNewRole('support')
-    setShowCreateModal(false)
+    if (hasSupabase && supabase) {
+      try {
+        // Create auth user via Supabase Auth Admin API (server-side)
+        // For client-side, we create a staff record and rely on auth
+        const { data, error } = await supabase
+          .from('staff')
+          .insert({
+            first_name: newName.split(' ')[0],
+            last_name: newName.split(' ').slice(1).join(' ') || '',
+            email: newEmail,
+            role: newRole,
+            is_active: true
+          })
+          .select()
+        
+        if (error) throw error
+        
+        // Clear form
+        setNewEmail('')
+        setNewPassword('')
+        setNewUsername('')
+        setNewName('')
+        setNewRole('support')
+        setShowCreateModal(false)
+        
+        // Refresh team list
+        const { data: staffData } = await supabase
+          .from('staff')
+          .select('*')
+          .in('role', ['administrator', 'partner', 'support', 'ceo'])
+        
+        setTeamMembers((staffData || []).map(s => ({
+          id: s.id,
+          name: `${s.first_name} ${s.last_name}`,
+          email: s.email,
+          role: s.role,
+          status: s.is_active ? 'active' : 'suspended'
+        })))
+      } catch (err) {
+        console.error('Error creating team member:', err)
+      }
+    }
     setCreating(false)
-    
-    // Refresh team list
-    fetchTeamMembers().then((data) => {
-      const admins = data.filter((u) => ['admin', 'partner', 'support', 'administrator'].includes(u.role || ''))
-      setTeamMembers(admins)
-    })
   }
 
   const handleSuspend = async () => {
     if (!selectedMember) return
-    await updateUserStatus(selectedMember.id, 'suspended')
-    // Update local state and localStorage
-    const localMembers = JSON.parse(localStorage.getItem('adjil_team_members') || '[]')
-    const updated = localMembers.map((u: any) => u.id === selectedMember.id ? { ...u, status: 'suspended' } : u)
-    localStorage.setItem('adjil_team_members', JSON.stringify(updated))
+    
+    if (hasSupabase && supabase) {
+      // Try to update staff table first, then users table
+      const { error } = await supabase
+        .from('staff')
+        .update({ is_active: selectedMember.status === 'suspended' })
+        .eq('id', selectedMember.id)
+      
+      if (error) {
+        // Try users table
+        await supabase
+          .from('users')
+          .update({ status: selectedMember.status === 'suspended' ? 'active' : 'suspended' })
+          .eq('id', selectedMember.id)
+      }
+    }
+    
+    // Update local state
     setTeamMembers((prev) => prev.map((u) => 
-      u.id === selectedMember.id ? { ...u, status: 'suspended' } : u
+      u.id === selectedMember.id ? { ...u, status: u.status === 'suspended' ? 'active' : 'suspended' } : u
     ))
     setShowSuspendModal(false)
     setSelectedMember(null)
@@ -79,11 +146,25 @@ export default function Settings() {
 
   const handleDelete = async () => {
     if (!selectedMember) return
-    await deleteTeamMember(selectedMember.id)
-    // Refresh from localStorage to ensure deleted user is removed
-    const localMembers = JSON.parse(localStorage.getItem('adjil_team_members') || '[]')
-    const filtered = localMembers.filter((u: any) => u.id !== selectedMember.id)
-    setTeamMembers(filtered)
+    
+    if (hasSupabase && supabase) {
+      // Try to delete from staff table first, then users table
+      const { error } = await supabase
+        .from('staff')
+        .delete()
+        .eq('id', selectedMember.id)
+      
+      if (error) {
+        // Try users table
+        await supabase
+          .from('users')
+          .delete()
+          .eq('id', selectedMember.id)
+      }
+    }
+    
+    // Update local state
+    setTeamMembers((prev) => prev.filter((u) => u.id !== selectedMember.id))
     setShowDeleteModal(false)
     setSelectedMember(null)
   }
