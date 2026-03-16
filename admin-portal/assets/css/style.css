@@ -1,0 +1,275 @@
+/* Custom CSS Variables & Base Styles */
+:root {
+    --primary-blue: #2563eb;
+    --secondary-blue: #1e40af;
+    --accent-orange: #f59e0b;
+    --success-green: #10b981;
+    --dark-grey: #1f2937;
+    --light-grey: #f3f4f6;
+}
+
+body { font-family: 'Cairo', sans-serif; }
+.font-montserrat { font-family: 'Montserrat', sans-serif; }
+
+/* Utilities */
+.gradient-text { background: linear-gradient(135deg, #2563eb, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.bg-cinematic { 
+    background: linear-gradient(rgba(2, 6, 23, 0.4), rgba(2, 6, 23, 0.5)), url('../../assets/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
+.animate-fade-in-up { animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+/* Partner Item styles */
+.partner-item {
+    flex: 0 0 auto;
+    width: 150px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+.partner-item:hover { transform: scale(1.05); }
+.partner-item img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+/* QR Code Scanner Placeholder */
+.qr-scanner-mock {
+    width: 250px;
+    height: 250px;
+    border: 2px solid var(--primary-blue);
+    border-radius: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+.qr-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: var(--primary-blue);
+    top: 0;
+    animation: scan 2s linear infinite;
+    box-shadow: 0 0 15px var(--primary-blue);
+}
+@keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+
+/* Bank Select Styles */
+.bank-card {
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+.bank-card.selected {
+    border-color: var(--primary-blue);
+    background: rgba(37, 99, 235, 0.05);
+    transform: scale(1.02);
+}
+.bank-card img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+}
+.bank-card span {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--dark-grey);
+}
+
+/* Card Gradients */
+.card-gradient { background: linear-gradient(135deg, var(--primary-blue), #002d5f); color: white !important; }
+.card-gradient * { color: white !important; }
+
+/* Print Styles */
+@media print {
+    body * { visibility: hidden; }
+    #print-area, #print-area * { visibility: visible; }
+    #print-area { position: absolute; left: 0; top: 0; width: 100%; color: black; background: white; padding: 20px; }
+}
+
+/* Premium Digital Card */
+.digital-card {
+    width: 100%;
+    aspect-ratio: 1.586 / 1;
+    height: auto;
+    background: linear-gradient(rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.9)), url('../../assets/client/Tiniri.png');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    z-index: 10;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 1.5rem; /* Match rounded-2xl roughly */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem;
+}
+.digital-card:hover { transform: translateY(-8px) rotate(1deg); box-shadow: 0 40px 80px rgba(0,0,0,0.6); }
+
+.card-chip {
+    width: 55px;
+    height: 40px;
+    background: linear-gradient(135deg, #fde047 0%, #ca8a04 100%);
+    border-radius: 8px;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+.card-chip::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+}
+
+/* GPS Status */
+.gps-active { color: #10b981; }
+.gps-inactive { color: #ef4444; }
+
+/* QR Scanner Animation */
+.scanner-container {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    aspect-ratio: 1;
+    margin: 0 auto;
+    border: 2px solid var(--primary-blue);
+    border-radius: 20px;
+    overflow: hidden;
+}
+.scanner-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--primary-blue);
+    box-shadow: 0 0 15px var(--primary-blue);
+    animation: scan-move 2s infinite linear;
+}
+@keyframes scan-move {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+
+/* --- Animations --- */
+
+/* 1. Slide-Up Animation */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+    animation: slideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* 2. Glassmorphism */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* 3. Glow Effect */
+.glow-effect {
+    position: relative;
+}
+.glow-effect::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, var(--primary-blue), var(--accent-orange), var(--success-green));
+    z-index: -1;
+    filter: blur(15px);
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+.glow-effect:hover::before {
+    opacity: 0.8;
+}
+
+/* 4. Freeze/Lock Animation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+.animate-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+.animate-pulse-red { animation: pulse-red 2s infinite; }
+
+/* 5. Button Hover Effects */
+.btn-premium {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.btn-premium:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+.btn-premium::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+}
+.btn-premium:hover::after {
+    left: 100%;
+}
+
+/* 6. Marquee Animation */
+.marquee-wrapper {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.marquee-content {
+    display: flex;
+    gap: 2rem;
+    width: max-content;
+    animation: marquee 18s linear infinite;
+    will-change: transform;
+}
+.marquee-content:hover {
+    animation-play-state: paused;
+}
+#map-picker-container {
+    height: 350px;
+    width: 100%;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+    z-index: 10;
+}
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+.tilt-hover { transition: transform .5s ease; transform-origin: center; }
+.tilt-hover:hover { transform: rotate(2deg) scale(1.02); }
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(37, 99, 235, 0.2); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(37, 99, 235, 0.5); }

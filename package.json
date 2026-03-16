@@ -1,0 +1,24 @@
+{
+  "name": "adjil-bnpl",
+  "version": "1.0.0",
+  "description": "Adjil Buy Now Pay Later - Algeria",
+  "private": true,
+  "workspaces": [
+    "admin-portal"
+  ],
+  "engines": {
+    "node": "20.x"
+  },
+  "main": "index.html",
+  "scripts": {
+    "build": "npm run build --workspace=admin-portal",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bnpl",
+    "algeria",
+    "fintech"
+  ],
+  "author": "",
+  "license": "ISC"
+}

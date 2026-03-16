@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build --workspace=admin-portal",
+  "installCommand": "npm install --legacy-peer-deps",
+  "outputDirectory": "admin-portal/dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
