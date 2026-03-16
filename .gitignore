@@ -4,9 +4,6 @@ node_modules
 # OS files
 .DS_Store
 
-# Environment variables
-.env
-admin-portal/.env
-
 # Admin portal
 admin-portal/node_modules
+admin-portal/.env  
